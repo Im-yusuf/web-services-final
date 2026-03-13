@@ -12,7 +12,9 @@ export class SavedListingController {
       res.status(201).json({ success: true, data: listing });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to save listing';
-      const status = message === 'Property not found' ? 404 : 500;
+      let status = 500;
+      if (message === 'Property not found') status = 404;
+      if (message === 'Property already saved') status = 409;
       res.status(status).json({ success: false, error: message });
     }
   }

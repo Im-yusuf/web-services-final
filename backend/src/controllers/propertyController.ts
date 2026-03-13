@@ -32,13 +32,19 @@ export class PropertyController {
   static async getProperties(req: Request, res: Response): Promise<void> {
     try {
       const { region, minPrice, maxPrice, propertyType, page, limit } = req.query;
+
+      const parsedMinPrice = minPrice ? parseInt(minPrice as string, 10) : undefined;
+      const parsedMaxPrice = maxPrice ? parseInt(maxPrice as string, 10) : undefined;
+      const parsedPage = page ? parseInt(page as string, 10) : 1;
+      const parsedLimit = limit ? parseInt(limit as string, 10) : 20;
+
       const result = await PropertyService.getProperties({
         region: region as string,
-        minPrice: minPrice ? parseInt(minPrice as string, 10) : undefined,
-        maxPrice: maxPrice ? parseInt(maxPrice as string, 10) : undefined,
+        minPrice: parsedMinPrice && parsedMinPrice > 0 ? parsedMinPrice : undefined,
+        maxPrice: parsedMaxPrice && parsedMaxPrice > 0 ? parsedMaxPrice : undefined,
         propertyType: propertyType as string,
-        page: page ? parseInt(page as string, 10) : 1,
-        limit: limit ? parseInt(limit as string, 10) : 20,
+        page: Math.max(1, isNaN(parsedPage) ? 1 : parsedPage),
+        limit: Math.min(Math.max(1, isNaN(parsedLimit) ? 20 : parsedLimit), 100),
       });
       res.json({ success: true, data: result });
     } catch (error) {

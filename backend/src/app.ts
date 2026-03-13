@@ -29,7 +29,7 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 // --- Swagger / OpenAPI documentation ---
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -61,7 +61,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
+  async function logout() {
+    try {
+      await authService.logout();
+    } catch {
+      // Server-side cleanup failed — still clear local state
+    }
     user.value = null;
     token.value = null;
     localStorage.removeItem('econest_token');

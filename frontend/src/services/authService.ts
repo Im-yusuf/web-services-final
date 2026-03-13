@@ -23,4 +23,8 @@ export const authService = {
     const { data } = await api.get('/auth/me');
     return data.data;
   },
+
+  async logout(): Promise<void> {
+    await api.post('/auth/logout', {});
+  },
 };

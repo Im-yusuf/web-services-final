@@ -203,6 +203,35 @@ See [docs/API.md](docs/API.md) for full endpoint documentation.
 
 ---
 
+## Coursework Submission Materials (COMP3011)
+
+| Deliverable | File | Description |
+|---|---|---|
+| Technical Report | [docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md) | Design choices, stack justification, architecture, security, testing, GenAI usage |
+| API Documentation | [docs/API.md](docs/API.md) + Swagger UI at `/api/docs` | Full endpoint reference with examples |
+| Presentation Slides | [docs/EcoNest_Presentation.pptx](docs/EcoNest_Presentation.pptx) | 15-slide PPTX for the oral exam |
+| GenAI Declaration | [docs/GENAI_DECLARATION.md](docs/GENAI_DECLARATION.md) | Full AI usage log with conversation excerpts |
+
+---
+
+## Documentation
+
+Detailed topic-based documentation lives in [docs/README.md](docs/README.md).
+
+Key guides:
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Authentication and User Data](docs/AUTH_AND_USER_DATA.md)
+- [Data Storage and Schema](docs/DATA_STORAGE_AND_SCHEMA.md)
+- [Data Import Pipeline](docs/DATA_IMPORT_PIPELINE.md)
+- [Analytics and Figure Derivations](docs/ANALYTICS_DERIVATIONS.md)
+- [Frontend State and Caching](docs/FRONTEND_STATE_AND_CACHING.md)
+- [Deployment and Environment](docs/DEPLOYMENT_AND_ENVIRONMENT.md)
+- [Testing and Validation](docs/TESTING_AND_VALIDATION.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+
+---
+
 ## Frontend Features
 
 | Feature | Description |
