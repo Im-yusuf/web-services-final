@@ -3,8 +3,26 @@
 // proxy rewrites /api requests to the local backend.
 import axios from 'axios';
 
+function resolveApiBaseUrl() {
+  const raw = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (!raw) return '/api';
+
+  if (raw.startsWith('/')) {
+    return raw;
+  }
+
+  const withProtocol = raw.startsWith('http://') || raw.startsWith('https://')
+    ? raw
+    : `https://${raw}`;
+
+  const withoutTrailingSlash = withProtocol.replace(/\/+$/, '');
+  return withoutTrailingSlash.endsWith('/api')
+    ? withoutTrailingSlash
+    : `${withoutTrailingSlash}/api`;
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
+  baseURL: resolveApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
