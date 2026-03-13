@@ -375,6 +375,7 @@ All saved listings endpoints require authentication.
 | `400` | Validation failed |
 | `401` | Not authenticated |
 | `404` | Property ID not found |
+| `409` | Property already saved |
 
 ---
 

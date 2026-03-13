@@ -1,6 +1,6 @@
 # GenAI Declaration — COMP3011 Coursework 1
 
-**Student:** Yusuf Yusuf  
+**Student:** Yusuf Demir
 **Module:** COMP3011 Web Services and Web Data  
 **Assessment:** Individual Web Services API Development Project  
 **Date:** March 2026
@@ -60,6 +60,8 @@ After about 15 minutes of back-and-forth, Gemini helped me converge on the **hou
 **Stage:** Still before any code  
 **What I did:** Once I had decided on the housing market project, I stayed in the same Gemini conversation and asked it to help me produce a proper requirements document. I told Gemini the technology stack I wanted to use — Node.js, Express, TypeScript, PostgreSQL, Prisma ORM, Vue 3 with Pinia — and asked it to generate structured requirements covering:
 
+I chose that stack deliberately because I regularly work with Vue and TypeScript. Since most implementation would be AI-assisted, staying with a familiar stack let me verify Copilot's code quality properly instead of just trusting generated output.
+
 - What endpoints the API needs to expose (and what each one should return)
 - What the database tables should look like (what fields from the Land Registry CSV map to which columns)
 - Non-functional requirements: authentication, pagination, error handling, input validation, CORS
@@ -96,10 +98,10 @@ ChatGPT produced a long, detailed prompt that specified:
 
 ---
 
-### 4. Full Implementation — GitHub Copilot (Claude Sonnet 4.6)
+### 4. Full Implementation — GitHub Copilot (Claude)
 
 **Stage:** Active development  
-**What I did:** I gave the ChatGPT-engineered prompt to GitHub Copilot in VS Code. Copilot (running Claude Sonnet 4.6) then built the project iteratively. The process was not fully automatic — it was a back-and-forth conversation over many hours:
+**What I did:** I gave the ChatGPT-engineered prompt to GitHub Copilot in VS Code. Copilot (running Claude) then built the project iteratively. The process was not fully automatic — it was a back-and-forth conversation over many hours:
 
 - **Phase 1 — Backend skeleton**: Copilot created the Prisma schema, then the service layer, controllers, routes, and middleware. Each component was generated in stages, and I reviewed the code after each stage before moving on.
 - **Phase 2 — Analytics logic**: The trends and market insights endpoints were the most complex. Copilot wrote the initial implementations, but I had Copilot iterate on the market signal classification logic (adjusting the growth thresholds) and the affordability ratio formula.
@@ -120,8 +122,6 @@ ChatGPT produced a long, detailed prompt that specified:
 
 - **JWT vs DB sessions**: Copilot's initial auth implementation used JWTs. I asked "what happens if a user wants to log out — can you actually invalidate a JWT?" This led to a discussion where Copilot explained that JWTs are stateless and can't be revoked without a blocklist. I decided I wanted instant logout, so I asked Copilot to rewrite the auth system to use database-backed sessions with a `sessions` table. Copilot did this and added the indexed `token` column for fast lookups.
 - **Median vs mean price**: When building the insights endpoint, I asked whether average price was the right metric for housing data. Copilot pointed out that house prices are heavily right-skewed (a few very expensive properties pull the average up), so a median is more representative. We added `medianPrice` to the insights response.
-- **REST vs GraphQL**: I briefly considered whether GraphQL would be better for the flexible querying patterns this project needs. After discussion, we concluded REST was appropriate because the endpoint set is well-defined and stable — GraphQL's flexibility would add complexity without clear benefit.
-
 ---
 
 ### 6. Debugging Deployment — Copilot
@@ -143,7 +143,7 @@ Beyond CORS, I also struggled with Railway build failures (getting the `railway.
 - Missing 409 Conflict test for duplicate saved listings
 - Missing combined-filter tests on the properties endpoint (filtering by both price range and property type simultaneously)
 
-I added these test cases.
+I then added all three: auth guard coverage, duplicate-saved-listing conflict coverage (`409`), and combined-filter coverage on the properties endpoint.
 
 ---
 
@@ -160,12 +160,12 @@ I added these test cases.
 The multi-model pipeline was genuinely effective. Using Gemini for ideation gave me a better project choice than I would have made alone. The ChatGPT prompt engineering step was the most valuable — the quality difference between a raw requirements prompt and a specifically-engineered build prompt was significant. Code generated from the engineered prompt had consistent architecture, naming conventions, and error handling from the start.
 
 ### What I would do differently
-Looking back, I relied on AI too heavily for the initial implementation and not enough for testing and validation. While I reviewed all generated code, I wish I had written more of the core business logic myself — particularly the market insights aggregation pipeline. I understand it now after reviewing it, but I would have learned more by writing it from scratch.
+Looking back, I relied on AI too heavily for the initial implementation and not enough for testing and validation. While I reviewed all generated code, I wish I had written more of the core business logic myself — particularly the market insights aggregation pipeline. That would have given me a deeper understanding of the data manipulation and aggregation challenges. I also would have written more tests myself to ensure I had a strong grasp of the expected behavior and edge cases.
 
 I also learned that deployment is the area where AI is least helpful. Copilot could help me reason about CORS configuration and suggest fixes, but it couldn't actually see my Railway deploy logs or Vercel build output in real time. The deployment debugging was mostly manual trial and error — change a config, push, wait for the deploy, check if it worked, repeat. This was the most frustrating and time-consuming part of the project.
 
-### Honesty about the level of AI use
-I want to be direct: the majority of the code in this project was generated by AI (Copilot/Claude), from a prompt that was itself written by AI (ChatGPT), based on requirements that were produced by AI (Gemini). My role was as the director — I chose the project, decided the stack, reviewed all code, made architectural decisions (like sessions over JWTs), debugged deployment issues, ran tests, and wrote the analytical content in this report. I did not write most of the code line-by-line myself, but I understand all of it and can explain any part of it.
+### Level of AI Use
+The majority of the code in this project was generated by AI (Copilot/Claude), from a prompt that was itself written by AI (ChatGPT), based on requirements that were produced by AI (Gemini). My role was as the director — I chose the project, decided the stack, reviewed all code, made architectural decisions (like sessions over JWTs), debugged deployment issues, ran tests, and wrote the analytical content in this report. I did not write most of the code line-by-line myself, but I understand all of it and can explain it.
 
 ---
 
@@ -173,7 +173,7 @@ I want to be direct: the majority of the code in this project was generated by A
 
 Based on the grade band rubric:
 
-> **80–89 (Excellent): High level use of GenAI to aid creative thinking and solution exploration.**
+> *** Very High level use of GenAI to aid creative thinking and solution exploration.**
 
 The multi-model pipeline (Gemini → ChatGPT → Copilot/Claude) represents a sophisticated and intentional approach to AI-assisted development. Each tool was selected for a specific strength:
 - Gemini: brainstorming and structured analysis
@@ -182,8 +182,6 @@ The multi-model pipeline (Gemini → ChatGPT → Copilot/Claude) represents a so
 
 This is not a case of using one tool as a simple code autocomplete. The pipeline required me to understand what each AI tool is good at, orchestrate the handoff between tools, and maintain quality control throughout. I was actively involved at every stage: making the project choice, reviewing requirements, evaluating prompt quality, reviewing generated code, challenging architectural decisions, debugging deployment, and running tests.
 
-Overall self-assessment: **80–89 (Excellent)**
-
 ---
 
 ## Honesty Statement
@@ -191,5 +189,8 @@ Overall self-assessment: **80–89 (Excellent)**
 All functionality, design decisions, and analysis described in the technical report and demonstrated in the oral examination are work I directed and reviewed, using AI tools as declared above. I reviewed all AI-generated code before acceptance and can explain every component of the system. All AI tool usage has been fully declared in this document. I have not omitted or hidden any use of AI.
 
 ---
+
+This document was also generated with the assistance of AI tools, primarily ChatGPT for structuring and phrasing, based on my detailed explanations and analysis. I have reviewed and approved all content in this declaration.
+All of the markdowns was constructed using ai and i have reviewed and approved all content in the markdowns.
 
 *This declaration was prepared in accordance with the COMP3011 GenAI policy (Green Light Assessment).*

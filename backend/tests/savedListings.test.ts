@@ -3,10 +3,11 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
 import app from '../src/app';
+import prisma from '../src/utils/prisma';
 
 describe('Saved Listings Endpoints', () => {
   let authToken: string;
-  let savedId: string;
+  let testPropertyId: string;
 
   const testUser = {
     email: `saved-test-${Date.now()}@example.com`,
@@ -18,6 +19,24 @@ describe('Saved Listings Endpoints', () => {
       .post('/api/auth/register')
       .send(testUser);
     authToken = res.body.data.token;
+
+    const property = await prisma.propertySale.create({
+      data: {
+        transactionId: `test-transaction-${Date.now()}`,
+        price: 250000,
+        transferDate: new Date('2025-01-01T00:00:00.000Z'),
+        postcode: 'LS1 1AA',
+        propertyType: 'T',
+        newBuild: false,
+        tenure: 'F',
+        street: 'TEST STREET',
+        townCity: 'LEEDS',
+        district: 'LEEDS',
+        county: 'WEST YORKSHIRE',
+      },
+    });
+
+    testPropertyId = property.id;
   });
 
   describe('POST /api/saved', () => {
@@ -36,6 +55,25 @@ describe('Saved Listings Endpoints', () => {
         .expect(400);
 
       expect(res.body.success).toBe(false);
+    });
+
+    it('should return 409 when saving the same property twice', async () => {
+      const firstSave = await request(app)
+        .post('/api/saved')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ propertyId: testPropertyId })
+        .expect(201);
+
+      expect(firstSave.body.success).toBe(true);
+
+      const duplicateSave = await request(app)
+        .post('/api/saved')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ propertyId: testPropertyId })
+        .expect(409);
+
+      expect(duplicateSave.body.success).toBe(false);
+      expect(duplicateSave.body.error).toBe('Property already saved');
     });
   });
 

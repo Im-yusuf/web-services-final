@@ -11,12 +11,17 @@ Location:
 
 - `backend/tests/`
 
+Current status (latest run):
+
+- 4 test files passing
+- 33 tests passing
+
 ## Test coverage areas
 
 - Auth endpoints: register, duplicate handling, login, token-based user info, logout
 - General/health routes
 - Property routes: trends, heatmap, properties, stats, regions
-- Saved listings routes: auth guard, validation, list/read behavior, update/delete paths
+- Saved listings routes: auth guard, validation, duplicate-save conflict (`409`), list/read behavior, update/delete paths
 
 ## Running tests
 

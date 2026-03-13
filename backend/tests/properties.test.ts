@@ -71,6 +71,14 @@ describe('Property Endpoints', () => {
       expect(res.body.success).toBe(true);
     });
 
+    it('should support combined price and property-type filters', async () => {
+      const res = await request(app)
+        .get('/api/properties?minPrice=100000&maxPrice=300000&propertyType=T')
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+    });
+
     it('should respect page and limit', async () => {
       const res = await request(app)
         .get('/api/properties?page=1&limit=5')

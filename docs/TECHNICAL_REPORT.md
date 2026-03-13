@@ -1,6 +1,6 @@
 # EcoNest: A Housing Market Analytics API
 ### COMP3011 Web Services and Web Data — Technical Report
-**Student:** Yusuf Yusuf | **Date:** March 2026
+**Student:** Yusuf Demir | **Date:** March 2026
 
 ---
 
@@ -21,6 +21,7 @@ Two complete years of Land Registry data (2024 and 2025) were imported — over 
 I chose **Node.js with Express** as the API runtime for practical reasons:
 
 - **TypeScript across the stack**: The most important factor was end-to-end type safety. With TypeScript on both the backend (Express) and frontend (Vue 3), I could share type definitions between layers, catching query shape mismatches and parameter errors at compile time rather than discovering them in production. For a data-heavy analytics API, this matters enormously — a missing field or wrong type in an aggregation result would silently corrupt charts.
+- **Familiar stack for verification**: I regularly build with TypeScript and Vue, so choosing this stack meant I could critically review Copilot output instead of accepting it blindly. Familiarity made it easier to spot weak abstractions, incorrect typings, and architectural drift during AI-assisted implementation.
 - **Async I/O**: Node's non-blocking event loop handles the IO-bound workload of this API well — it's mostly database reads and HTTP responses, not CPU-intensive computation.
 - **Ecosystem depth**: npm has production-ready solutions for everything I needed — Prisma for ORM, Zod for validation, bcrypt for password hashing, swagger-jsdoc for API documentation.
 - **Alternatives I considered**: I looked at Python/FastAPI seriously — the automatic OpenAPI generation is excellent. But I'd have lost the shared-type advantage between backend and frontend. I also briefly considered Go with Fiber for raw performance, but the development speed with TypeScript and the Prisma ecosystem made Node the pragmatic choice.
@@ -42,7 +43,7 @@ PostgreSQL was the clear choice over SQLite (too limited for 500k+ records) and 
 
 ### 2.4 Frontend: Vue 3 + Pinia + Tailwind CSS + Vite
 
-- **Vue 3 Composition API**: I considered React but chose Vue for its more intuitive reactivity model and gentler learning curve. The Composition API provides clean separation of concerns in complex views like the dashboard which loads multiple data sources in parallel.
+- **Vue 3 Composition API**: I considered React but chose Vue for its more intuitive reactivity model and gentler learning curve. I also use Vue regularly, which made me more confident auditing Copilot-generated components and store logic. The Composition API provides clean separation of concerns in complex views like the dashboard which loads multiple data sources in parallel.
 - **Pinia**: Five stores implemented — `auth`, `comparison`, `dataCache`, `filters`, and `saved`. The `dataCache` store was an important design decision: it memoises API responses with a 5-minute TTL so switching between views doesn't trigger redundant backend calls.
 - **Tailwind CSS**: Utility-first approach let me build a consistent dark-themed responsive UI without maintaining a separate CSS design system.
 - **Vite**: Much faster hot module replacement than webpack, which made the development feedback loop noticeably quicker.
@@ -152,7 +153,7 @@ Tests use **Vitest** and **Supertest** for full HTTP-layer integration testing a
 
 - **Auth tests** (`auth.test.ts`): Registration, duplicate email rejection (409), invalid input validation (400), login, token-based `/me` access, logout invalidation, and unauthenticated access rejection on protected routes.
 - **Property tests** (`properties.test.ts`): Trend queries with and without filters, heatmap data shape validation, paginated property listing with price/type/region filters, region list, and stats endpoint.
-- **Saved listings tests** (`savedListings.test.ts`): Full CRUD lifecycle — create (201), list, update note, delete. Auth guard validation on every saved route. Duplicate save rejection (409).
+- **Saved listings tests** (`savedListings.test.ts`): Auth guard validation, invalid UUID validation, duplicate-save conflict handling (409), empty-list reads, update/delete not-found paths, and owner-only access behavior for protected routes.
 - **General tests** (`general.test.ts`): Health check, 404 handling for unknown routes.
 
 I deliberately chose integration tests over unit tests. In a data API, the most common bugs occur at the boundary between HTTP input parsing, service logic, and database queries. Mocking the database would hide the exact class of bugs most likely to occur — malformed Prisma queries, missing field mappings, incorrect aggregation logic. Integration tests running the full pipeline catch these.
@@ -235,7 +236,6 @@ I used three AI tools in a sequential pipeline, each for a specific purpose:
 
 4. Copilot also helped with **debugging deployment issues** (the CORS preflight failure with Vercel preview URLs), **reviewing test coverage** (identifying missing edge cases), and **structuring this report and presentation**.
 
-**Self-assessment**: 80–89 band (Excellent). The multi-model pipeline represents a methodologically sophisticated use of GenAI where each tool was chosen for its comparative advantage, and I maintained active oversight and direction throughout.
 
 **Reflective analysis:**
 

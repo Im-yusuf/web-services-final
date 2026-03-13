@@ -151,7 +151,7 @@ backend/                      # Express API
 │   └── importPriceData.ts    # HM Land Registry CSV importer
 ├── prisma/
 │   └── schema.prisma         # Database schema
-├── data/                     # Place CSV files here (git-ignored)
+├── data/                     # HM Land Registry CSV files (2025 included; 2024 excluded from Git)
 ├── tests/                    # Vitest integration tests
 ├── package.json
 ├── tsconfig.json
