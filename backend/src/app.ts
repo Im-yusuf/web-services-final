@@ -14,7 +14,21 @@ import marketInsightsRoutes from './routes/marketInsightsRoutes';
 const app = express();
 
 // --- Core middleware ---
-app.use(cors({ origin: config.corsOrigin, credentials: true }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const isAllowedOrigin =
+      config.corsOrigin.includes(origin) ||
+      /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+
+    callback(null, isAllowedOrigin);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // --- Swagger / OpenAPI documentation ---
