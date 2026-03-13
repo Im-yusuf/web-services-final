@@ -60,15 +60,16 @@ cd backend
 npx prisma migrate dev --name init
 ```
 
-### 6. Import the real HM Land Registry data
+### 6. Import the HM Land Registry data
 
-This will take a few minutes each:
+The 2025 dataset (570k records) is included in the repository. Import it:
 
 ```bash
 cd backend
-npm run import-data data/pp-2024.csv
 npm run import-data data/pp-2025.csv
 ```
+
+> The 2024 dataset is not included (153 MB, exceeds GitHub's limit). You can download it from [HM Land Registry](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads) and import it the same way if desired.
 
 ### 7. Start the development server
 
