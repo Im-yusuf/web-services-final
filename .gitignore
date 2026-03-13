@@ -2,3 +2,7 @@ node_modules
 dist
 .env
 *.log
+
+# Large HM Land Registry CSV data files — too large for GitHub (>100MB)
+backend/data/*.csv
+data/*.csv
