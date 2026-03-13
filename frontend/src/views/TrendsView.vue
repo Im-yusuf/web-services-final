@@ -73,7 +73,7 @@ const cache = useDataCacheStore();
 
 const trendData = ref<TrendData[]>([]);
 const loading = ref(false);
-const filter = ref<TrendFilter>({ region: '', year: '', propertyType: '' });
+const filter = ref<TrendFilter>({ region: '', year: '2025', propertyType: '' });
 
 const totalGrowth = computed(() => {
   if (trendData.value.length < 2) return 0;
@@ -83,7 +83,7 @@ const totalGrowth = computed(() => {
 });
 
 function hasActiveFilters(): boolean {
-  return !!(filter.value.region || filter.value.year || filter.value.propertyType);
+  return !!(filter.value.region || filter.value.propertyType);
 }
 
 async function fetchTrends() {

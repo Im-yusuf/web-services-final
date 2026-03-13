@@ -25,14 +25,38 @@ npm install
 
 ### 2. Make sure `psql` is on your PATH
 
-On macOS with Homebrew, PostgreSQL binaries are not on the PATH by default. Add this to your `~/.zshrc` (or `~/.bashrc`) so it persists across terminal sessions:
+Prisma requires `psql` to be available when running migrations.
+
+Check first:
+
+```bash
+psql --version
+```
+
+If the command is not found, add PostgreSQL binaries to `PATH` based on your OS:
+
+**macOS (Homebrew):**
 
 ```bash
 echo 'export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-> Prisma requires `psql` to be accessible when running migrations. If you skip this step, `npx prisma migrate dev` will fail.
+**Linux (Debian/Ubuntu example):**
+
+```bash
+echo 'export PATH="/usr/lib/postgresql/17/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$env:Path += ";C:\Program Files\PostgreSQL\17\bin"
+psql --version
+```
+
+If you want this persistent on Windows, add the same PostgreSQL `bin` path in **System Properties → Environment Variables → Path**.
 
 ### 3. Configure environment variables
 
@@ -41,16 +65,21 @@ cd backend
 cp .env.example .env
 ```
 
-Open `.env` and set `DATABASE_URL` to match your local Postgres credentials. On a default Homebrew macOS install (no password, username = your macOS login name):
+Open `.env` and set `DATABASE_URL` to match your local Postgres credentials:
 
 ```
-DATABASE_URL="postgresql://YOUR_MAC_USERNAME@localhost:5432/econest?schema=public"
+DATABASE_URL="postgresql://YOUR_DB_USER:YOUR_DB_PASSWORD@localhost:5432/econest?schema=public"
 ```
+
+Examples:
+
+- macOS/Linux (local user, no password): `postgresql://YOUR_USERNAME@localhost:5432/econest?schema=public`
+- Windows with password: `postgresql://postgres:YourPassword@localhost:5432/econest?schema=public`
 
 ### 4. Create the database
 
 ```bash
-psql -U YOUR_MAC_USERNAME -d postgres -c "CREATE DATABASE econest;"
+psql -U YOUR_DB_USER -d postgres -c "CREATE DATABASE econest;"
 ```
 
 ### 5. Run database migrations

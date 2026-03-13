@@ -30,8 +30,7 @@
       <div v-if="showYear">
         <label class="block text-sm text-gray-400 mb-1">Year</label>
         <select v-model="localFilter.year" class="select-field" @change="emitChange">
-          <option value="">All Years</option>
-          <option v-for="y in years" :key="y" :value="String(y)">{{ y }}</option>
+          <option value="2025">2025</option>
         </select>
       </div>
 
@@ -94,13 +93,13 @@ const emit = defineEmits<{
 const regions = ref<string[]>([]);
 const localFilter = ref({ ...props.modelValue });
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
-
 watch(
   () => props.modelValue,
   (val) => {
-    localFilter.value = { ...val };
+    localFilter.value = {
+      ...val,
+      ...(props.showYear ? { year: '2025' } : {}),
+    };
   },
   { deep: true }
 );
@@ -114,7 +113,7 @@ function handleReset() {
   localFilter.value = {
     region: '',
     propertyType: '',
-    year: '',
+    year: '2025',
     minPrice: undefined,
     maxPrice: undefined,
   };
@@ -123,6 +122,11 @@ function handleReset() {
 }
 
 onMounted(async () => {
+  if (props.showYear && !localFilter.value.year) {
+    localFilter.value.year = '2025';
+    emitChange();
+  }
+
   try {
     regions.value = await propertyService.getRegions();
   } catch {

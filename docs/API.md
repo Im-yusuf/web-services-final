@@ -95,6 +95,7 @@ Log in with existing credentials.
 **Errors:**
 | Status | Meaning |
 |---|---|
+| `400` | Validation failed (invalid email / short password) |
 | `401` | Invalid email or password |
 
 ---
@@ -107,6 +108,11 @@ Log in with existing credentials.
 ```json
 { "success": true, "message": "Logged out successfully" }
 ```
+
+**Errors:**
+| Status | Meaning |
+|---|---|
+| `401` | Missing, invalid, or expired token |
 
 ---
 
@@ -136,6 +142,8 @@ Log in with existing credentials.
 
 ## Property Endpoints
 
+For the current release, all property endpoints (`/trends`, `/heatmap`, `/properties`, `/regions`, `/stats`) are restricted to **2025 transaction data**.
+
 ### GET /api/trends
 
 Returns monthly average price trends. Optionally filtered.
@@ -144,7 +152,7 @@ Returns monthly average price trends. Optionally filtered.
 | Parameter | Type | Description |
 |---|---|---|
 | `region` | string | City, district, or county name (case-insensitive) |
-| `year` | string | 4-digit year e.g. `2024` |
+| `year` | string | Accepted value is `2025` (other values are ignored by the API) |
 | `propertyType` | string | `D` Detached · `S` Semi-detached · `T` Terraced · `F` Flat · `O` Other |
 
 **Response `200`:**
@@ -153,7 +161,7 @@ Returns monthly average price trends. Optionally filtered.
   "success": true,
   "data": [
     {
-      "year": 2024,
+      "year": 2025,
       "month": 1,
       "avgPrice": 285000,
       "transactionCount": 312,
@@ -167,7 +175,7 @@ Returns monthly average price trends. Optionally filtered.
 
 ### GET /api/heatmap
 
-Returns average house price and total sales per county. Useful for rendering a choropleth / heatmap.
+Returns average house price and total sales per county for the **2025 subset**. Useful for rendering a choropleth / heatmap.
 
 **Response `200`:**
 ```json
@@ -189,7 +197,7 @@ Results are ordered by `avgPrice` descending.
 
 ### GET /api/properties
 
-Paginated list of individual property sale records with optional filters.
+Paginated list of individual property sale records with optional filters. Results are restricted to **2025** transactions.
 
 **Query parameters:**
 | Parameter | Type | Default | Description |
@@ -210,7 +218,7 @@ Paginated list of individual property sale records with optional filters.
       {
         "id": "uuid",
         "price": 325000,
-        "transferDate": "2024-06-15T00:00:00.000Z",
+        "transferDate": "2025-06-15T00:00:00.000Z",
         "postcode": "LS1 4AB",
         "propertyType": "T",
         "newBuild": false,
@@ -233,7 +241,7 @@ Paginated list of individual property sale records with optional filters.
 
 ### GET /api/regions
 
-Returns the list of all distinct counties present in the database.
+Returns the list of all distinct counties present in the **2025 dataset subset**.
 
 **Response `200`:**
 ```json
@@ -247,7 +255,7 @@ Returns the list of all distinct counties present in the database.
 
 ### GET /api/stats
 
-Returns top-level market statistics across the whole dataset.
+Returns top-level market statistics across the **2025 dataset subset**.
 
 **Response `200`:**
 ```json

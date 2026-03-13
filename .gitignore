@@ -2,6 +2,7 @@ node_modules
 dist
 .env
 *.log
+docs/*.pptx
 
 # 2024 data is too large for GitHub (153MB) — download from HM Land Registry
 backend/data/pp-2024.csv

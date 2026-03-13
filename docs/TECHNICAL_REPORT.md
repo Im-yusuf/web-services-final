@@ -2,6 +2,13 @@
 ### COMP3011 Web Services and Web Data — Technical Report
 **Student:** Yusuf Demir | **Date:** March 2026
 
+--
+github repository: https://github.com/Im-yusuf/web-services-final
+live website: https://web-services-final.vercel.app/login
+API documentation: https://web-services-final.up.railway.app/api/docs
+powerpoint slides: https://docs.google.com/presentation/d/1GcqEUZturqzag-SsH4dAZav6BmBvsJG-/edit?usp=sharing&ouid=117720477378066333630&rtpof=true&sd=true
+
+
 ---
 
 ## 1. Introduction & Project Overview
@@ -10,7 +17,7 @@ EcoNest is a full-stack web API and single-page application that transforms raw 
 
 The motivation behind EcoNest is straightforward: UK house prices are one of the most discussed economic indicators, yet the raw Land Registry CSV files are large, poorly formatted, and inaccessible to anyone without data engineering skills. I wanted to build something that takes this real public data and turns it into something genuinely useful — clean endpoints for price trends, regional heatmaps, affordability metrics, and market signals, all wrapped in an authenticated multi-user experience with saved listings and comparison tools.
 
-Two complete years of Land Registry data (2024 and 2025) were imported — over 500,000 real transaction records — so every analytics result comes from genuine market data rather than synthetic test fixtures.
+Two complete years of Land Registry data (2024 and 2025) were imported — over 500,000 real transaction records. For the current release, API and frontend views are intentionally restricted to **2025-only** outputs so users see a single consistent reporting window.
 
 ---
 
@@ -108,6 +115,8 @@ Interactive documentation is available via **Swagger UI** at `/api/docs`, with a
 
 The `/trends` endpoint fetches filtered transactions from PostgreSQL, groups them by year-month in the application layer, and derives month-over-month price growth:
 
+To keep all user-facing analytics consistent, the backend enforces a fixed `transferDate` range for 2025. The trends year dropdown is therefore locked to `2025`, and manual requests for other years are ignored by the API.
+
 $$priceGrowth\% = \frac{avgPrice_t - avgPrice_{t-1}}{avgPrice_{t-1}} \times 100$$
 
 I chose in-application grouping here rather than a SQL GROUP BY because Prisma's API makes month-key construction cleaner in TypeScript than in raw SQL date formatting.
@@ -172,7 +181,7 @@ I deliberately chose integration tests over unit tests. In a data API, the most 
 
 **Environment variables**: `DATABASE_URL`, `CORS_ORIGIN`, and `PORT` on Railway; `VITE_API_BASE_URL` on Vercel pointing to the Railway backend URL.
 
-**Data import**: A dedicated CLI script (`scripts/importPriceData.ts`) reads Land Registry CSVs, streams and parses records in batches of 500, and uses `createMany` with `skipDuplicates: true` for idempotent import. The script handles both named-column and positional CSVs, and falls back to individual inserts if a batch fails. I ran imports locally against Railway's external database URL for the 2024 and 2025 datasets.
+**Data import**: A dedicated CLI script (`scripts/importPriceData.ts`) reads Land Registry CSVs, streams and parses records in batches of 500, and uses `createMany` with `skipDuplicates: true` for idempotent import. The script handles both named-column and positional CSVs, and falls back to individual inserts if a batch fails. I ran imports locally against Railway's external database URL for the 2024 and 2025 datasets, with presentation-layer/API filtering currently pinned to 2025.
 
 **Health check**: `/api/health` returns `{ status: "ok", timestamp: "..." }` — Railway uses this as a liveness probe.
 

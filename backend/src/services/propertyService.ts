@@ -4,6 +4,15 @@ import prisma from '../utils/prisma';
 import { TrendQuery, PropertyFilter, HeatmapData, TrendResult, PaginatedResponse } from '../types';
 import { PropertySale, Prisma } from '@prisma/client';
 
+const VIEWABLE_YEAR = 2025;
+
+function getViewableYearRange() {
+  return {
+    gte: new Date(`${VIEWABLE_YEAR}-01-01`),
+    lt: new Date(`${VIEWABLE_YEAR + 1}-01-01`),
+  };
+}
+
 export class PropertyService {
   // Compute monthly average prices grouped by year-month.
   // Optionally filtered by region, year, and property type.
@@ -18,13 +27,7 @@ export class PropertyService {
       ];
     }
 
-    if (query.year) {
-      const year = parseInt(query.year, 10);
-      where.transferDate = {
-        gte: new Date(`${year}-01-01`),
-        lt: new Date(`${year + 1}-01-01`),
-      };
-    }
+    where.transferDate = getViewableYearRange();
 
     if (query.propertyType) {
       where.propertyType = query.propertyType;
@@ -77,6 +80,7 @@ export class PropertyService {
   static async getHeatmap(): Promise<HeatmapData[]> {
     const results = await prisma.propertySale.groupBy({
       by: ['county'],
+      where: { transferDate: getViewableYearRange() },
       _avg: { price: true },
       _count: { id: true },
       orderBy: { _avg: { price: 'desc' } },
@@ -96,7 +100,9 @@ export class PropertyService {
     const limit = Math.min(filter.limit || 20, 100);
     const skip = (page - 1) * limit;
 
-    const where: Prisma.PropertySaleWhereInput = {};
+    const where: Prisma.PropertySaleWhereInput = {
+      transferDate: getViewableYearRange(),
+    };
 
     if (filter.region) {
       where.OR = [
@@ -142,6 +148,7 @@ export class PropertyService {
   // Return all distinct county names, sorted alphabetically
   static async getRegions(): Promise<string[]> {
     const results = await prisma.propertySale.findMany({
+      where: { transferDate: getViewableYearRange() },
       select: { county: true },
       distinct: ['county'],
       orderBy: { county: 'asc' },
@@ -152,9 +159,15 @@ export class PropertyService {
   // High-level market statistics used by the dashboard overview cards
   static async getStats() {
     const [totalProperties, avgPrice, latestSale] = await Promise.all([
-      prisma.propertySale.count(),
-      prisma.propertySale.aggregate({ _avg: { price: true } }),
-      prisma.propertySale.findFirst({ orderBy: { transferDate: 'desc' } }),
+      prisma.propertySale.count({ where: { transferDate: getViewableYearRange() } }),
+      prisma.propertySale.aggregate({
+        where: { transferDate: getViewableYearRange() },
+        _avg: { price: true },
+      }),
+      prisma.propertySale.findFirst({
+        where: { transferDate: getViewableYearRange() },
+        orderBy: { transferDate: 'desc' },
+      }),
     ]);
 
     return {

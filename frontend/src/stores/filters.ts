@@ -16,7 +16,7 @@ export const useFilterStore = defineStore('filters', () => {
 
   const trendFilter = ref<TrendFilter>({
     region: '',
-    year: '',
+    year: '2025',
     propertyType: '',
   });
 
@@ -33,7 +33,7 @@ export const useFilterStore = defineStore('filters', () => {
   }
 
   function resetTrendFilter() {
-    trendFilter.value = { region: '', year: '', propertyType: '' };
+    trendFilter.value = { region: '', year: '2025', propertyType: '' };
   }
 
   return {

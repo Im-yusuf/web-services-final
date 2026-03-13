@@ -17,7 +17,7 @@ export const propertyService = {
   async getTrends(filter: TrendFilter = {}): Promise<TrendData[]> {
     const params = new URLSearchParams();
     if (filter.region) params.set('region', filter.region);
-    if (filter.year) params.set('year', filter.year);
+    params.set('year', '2025');
     if (filter.propertyType) params.set('propertyType', filter.propertyType);
 
     const { data } = await api.get<ApiResponse<TrendData[]>>(`/trends?${params}`);

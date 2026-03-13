@@ -7,6 +7,16 @@
 
 This aligns with the project’s Node/Prisma/Vite architecture.
 
+## Local development (cross-platform)
+
+This project can be developed on macOS, Linux, or Windows.
+
+- Ensure `psql` is installed and available in your shell `PATH`
+- Set `DATABASE_URL` in `backend/.env` using your local PostgreSQL credentials
+- Run migrations from `backend/` with `npx prisma migrate dev`
+
+If `psql` is not found, add your PostgreSQL `bin` directory to `PATH` for your OS (macOS/Linux shell profile, or Windows Environment Variables).
+
 ## Backend environment variables
 
 Required:
