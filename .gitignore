@@ -3,6 +3,5 @@ dist
 .env
 *.log
 
-# Large HM Land Registry CSV data files — too large for GitHub (>100MB)
-backend/data/*.csv
-data/*.csv
+# 2024 data is too large for GitHub (153MB) — download from HM Land Registry
+backend/data/pp-2024.csv
